@@ -1,0 +1,68 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>🧠 Asistente #1 Futurista</title>
+  <style>
+    body {
+      background: #0f0f1a;
+      color: #00ffc8;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    textarea, input, button {
+      background: #1a1a2e;
+      color: #00ffc8;
+      border: none;
+      border-radius: 10px;
+      padding: 10px;
+      margin: 10px;
+      width: 80%;
+    }
+    button {
+      background: #00ffc8;
+      color: black;
+      cursor: pointer;
+    }
+    .big-box {
+      height: 400px;
+      width: 90%;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧠 Asistente #1 Futurista</h1>
+  <textarea id="chat" class="big-box" readonly></textarea><br>
+  <input type="text" id="message" placeholder="Escribe tu mensaje aquí..." />
+  <button onclick="sendMessage()">Enviar</button><br><br>
+  <input type="file" id="video" />
+  <button onclick="uploadVideo()">Aprender desde Video</button>
+
+  <script>
+    async function sendMessage() {
+      const msg = document.getElementById('message').value;
+      const chat = document.getElementById('chat');
+      chat.value += "Tú: " + msg + "\n";
+      const res = await fetch('/ask', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ message: msg })
+      });
+      const data = await res.json();
+      chat.value += "Asistente: " + data.reply + "\n";
+      document.getElementById('message').value = "";
+    }
+
+    async function uploadVideo() {
+      const file = document.getElementById('video').files[0];
+      const formData = new FormData();
+      formData.append("video", file);
+      const res = await fetch('/learn', { method: 'POST', body: formData });
+      const data = await res.json();
+      alert(data.message);
+    }
+  </script>
+</body>
+</html>
