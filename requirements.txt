@@ -1,5 +1,5 @@
-Flask>=2
+Flask>=2.0
 openai>=1.0.0
-moviepy
 openai-whisper
 torch
+ffmpeg-python
