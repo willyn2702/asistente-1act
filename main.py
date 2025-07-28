@@ -1,13 +1,12 @@
-
 import os
 import json
 import whisper
-import openai
+from openai import OpenAI
 from flask import Flask, request, jsonify, render_template_string
 from moviepy.editor import VideoFileClip
 
 app = Flask(__name__)
-openai.api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 memory_file = "memory.json"
 if not os.path.exists(memory_file):
@@ -32,7 +31,7 @@ def learn_from_text(text):
 
 @app.route("/", methods=["GET"])
 def home():
-    return render_template_string(open("frontend.html").read())
+    return render_template_string(open("frontend.html", encoding="utf-8").read())
 
 @app.route("/ask", methods=["POST"])
 def ask():
@@ -41,7 +40,7 @@ def ask():
     with open(memory_file, "r") as f:
         memory = json.load(f)
     context = "\n".join([m["content"] for m in memory])
-    response = openai.chat.completions.create(
+    response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": "Eres un asistente que ha aprendido de estos videos: " + context},
@@ -62,3 +61,4 @@ def learn():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
